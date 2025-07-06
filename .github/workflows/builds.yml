@@ -52,11 +52,13 @@ jobs:
           flake8 src/ || echo "Python style issues found"
 
       - name: Build ROS 2 workspace
+        shell: bash
         run: |
           colcon build
           source install/setup.bash
 
       - name: Run tests
+        shell: bash
         run: |
           colcon test
           colcon test-result --verbose
