@@ -21,26 +21,26 @@ jobs:
           source /opt/ros/humble/setup.bash
           echo "ROS environment sourced."
 
-          - name: Install dependencies
-          shell: bash
-          run: |
-            apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-              apt-utils \
-              curl \
-              wget \
-              lsb-release \
-              gnupg \
-              software-properties-common \
-              python3-pip \
-              python3-setuptools \
-              python3-vcstool \
-              git
-        
-            pip3 install -U \
-              flake8 \
-              ament-lint
-        
-            echo "Dependencies installed."        
+      - name: Install dependencies
+        shell: bash
+        run: |
+          apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+            apt-utils \
+            curl \
+            wget \
+            lsb-release \
+            gnupg \
+            software-properties-common \
+            python3-pip \
+            python3-setuptools \
+            python3-vcstool \
+            git
+
+          pip3 install -U \
+            flake8 \
+            ament-lint
+
+          echo "Dependencies installed."
 
       - name: Check code style (ament_lint)
         run: |
