@@ -16,11 +16,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up ROS 2 environment
+        shell: bash
         run: |
-          echo "source /opt/ros/humble/setup.bash" >> $GITHUB_ENV
           source /opt/ros/humble/setup.bash
+          echo "ROS environment sourced."
 
       - name: Install dependencies
+        shell: bash
         run: |
           apt-get update && apt-get install -y \
             python3-colcon-common-extensions \
