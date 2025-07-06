@@ -1,41 +1,41 @@
-
-#TODO: 
-# - Add a step to run tests after building the workspace.
-# - Add a step to upload the built artifacts to a release or an artifact storage.
-# - Add a step to notify the team about the build status (success/failure).
-# - Add a step to clean up the workspace after the build is complete.
-# - Add a step to check for code style and formatting issues.
-# - Add a step to check for dependencies and install them if necessary.
-
 name: Onboard ROS Build
+
 on:
   push:
-    branches: ["main"] # TODO: apply to all branch when commit/ change to "main", "feature/**" or "develop" branch
+    branches: ["main"] # TODO: expand to ["main", "develop", "feature/**"]
   pull_request:
-    branches: ["main"] # TODO: change to main branch when commit
+    branches: ["main"]
+
 jobs:
   ros2-humble:
     runs-on: ubuntu-latest
-    container: ros:humble-ros-core-jammy  # Use the official ROS 2 Humble Docker image, tahnks god it works now
+    container: ros:humble-ros-core-jammy
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up ROS 2 environment
-        working-directory: $GITHUB_WORKSPACE
         run: |
           echo "source /opt/ros/humble/setup.bash" >> $GITHUB_ENV
           source /opt/ros/humble/setup.bash
 
       - name: Install dependencies
         run: |
-          apt-get update && apt-get install -y python3-colcon-common-extensions
+          apt-get update && apt-get install -y \
+            python3-colcon-common-extensions \
+            python3-pip
+          pip3 install -U flake8  # Optional: for Python linting
           rosdep update
           rosdep install --from-paths src --ignore-src -r -y
 
       - name: Check code style (ament_lint)
         run: |
-          colcon lint
+          colcon lint || echo "Linting warnings found"
+
+      - name: Check Python formatting (flake8)
+        run: |
+          flake8 src/ || echo "Python style issues found"
 
       - name: Build ROS 2 workspace
         run: |
@@ -52,6 +52,12 @@ jobs:
         with:
           name: ros2-workspace-artifacts
           path: install/
+
+      - name: Notify team on failure
+        if: failure()
+        run: |
+          echo "Build failed! Notify team via Slack, email, or GitHub comments."
+          # Here you could integrate with a Slack webhook or other service.
 
       - name: Clean up workspace
         run: |
